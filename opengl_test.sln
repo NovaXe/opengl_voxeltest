@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "opengl_test", "opengl_test\opengl_test.vcxproj", "{60093669-53B1-4896-9FD0-C1E81F02E0A1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "learnopengl_bookcode", "learnopengl_bookcode\learnopengl_bookcode.vcxproj", "{E2785F97-E669-4792-B00B-F2599815A09F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -23,14 +21,6 @@ Global
 		{60093669-53B1-4896-9FD0-C1E81F02E0A1}.Release|x64.Build.0 = Release|x64
 		{60093669-53B1-4896-9FD0-C1E81F02E0A1}.Release|x86.ActiveCfg = Release|Win32
 		{60093669-53B1-4896-9FD0-C1E81F02E0A1}.Release|x86.Build.0 = Release|Win32
-		{E2785F97-E669-4792-B00B-F2599815A09F}.Debug|x64.ActiveCfg = Debug|x64
-		{E2785F97-E669-4792-B00B-F2599815A09F}.Debug|x64.Build.0 = Debug|x64
-		{E2785F97-E669-4792-B00B-F2599815A09F}.Debug|x86.ActiveCfg = Debug|Win32
-		{E2785F97-E669-4792-B00B-F2599815A09F}.Debug|x86.Build.0 = Debug|Win32
-		{E2785F97-E669-4792-B00B-F2599815A09F}.Release|x64.ActiveCfg = Release|x64
-		{E2785F97-E669-4792-B00B-F2599815A09F}.Release|x64.Build.0 = Release|x64
-		{E2785F97-E669-4792-B00B-F2599815A09F}.Release|x86.ActiveCfg = Release|Win32
-		{E2785F97-E669-4792-B00B-F2599815A09F}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
