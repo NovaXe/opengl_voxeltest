@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <assert.h>
-#include <glad/glad.h>
 #include <string.h>
 #include "shader.h"
+#include <glad/glad.h>
+#include <cglm/cglm.h>
 
 
 unsigned int shader_compileShader(const char* vertexPath, const char* fragmentPath)
@@ -120,4 +121,18 @@ unsigned int shader_compileShader(const char* vertexPath, const char* fragmentPa
 
 
 	return programID;
+}
+
+void shader_setUniformMat4(Shader shader, char* name, mat4 mat) {
+	glUniformMatrix4fv(glGetUniformLocation(shader, name), 1, GL_FALSE, mat);
+}
+
+void shader_setUniformVec3(Shader shader, char* name, vec3 vec)
+{
+	glUniform3fv(glGetUniformLocation(shader, name), 1, vec);
+}
+
+void shader_setUniformTexture(Shader shader, char* name, unsigned int textureID)
+{
+	glUniform1i(glGetUniformLocation(shader, name), 0);
 }

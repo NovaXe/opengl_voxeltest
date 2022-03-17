@@ -9,6 +9,7 @@
 #include "texture.h"
 
 unsigned int texture_textures[MAX_TEXTURES];
+GLuint texture_atlas = 0;
 
 char* texture_textureNames[MAX_TEXTURES] = {
 	"",
@@ -26,6 +27,36 @@ void texture_genTextures(void)
 	for (int i = 0; i < 2; i++) {
 		texture_gen(i);
 	}
+}
+
+void texture_genAtlas(void) {
+	glGenTextures(1, texture_atlas);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	int width, height, nrChannels;
+
+	static unsigned char* imgData;
+	imgData = stbi_load("Textures\\Blocks\\TextureAtlas.png", &width, &height, &nrChannels, 4);
+
+	if (imgData != NULL) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgData);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		printf("Succesfully loaded Texture Atlas\n");
+	}
+	else {
+		printf("Failed to load Texture Atlas\n");
+	}
+	stbi_image_free(imgData);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// Eventually come back and generate an internal atlas rather than manually making on with every texture
+	// For now I'm using a texture atlast that I piece together in photoshop
+	// terrain.png lul
 }
 
 

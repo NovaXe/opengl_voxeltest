@@ -54,6 +54,9 @@
     <ClCompile Include="color.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="blockface.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="opengl_test.rc">
@@ -99,6 +102,9 @@
     <Image Include="Textures\Blocks\stone.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Textures\Blocks\TextureAtlas.png">
+      <Filter>Textures\Blocks</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
@@ -123,6 +129,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="color.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="blockface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="block.c" />
+    <ClCompile Include="blockface.c" />
     <ClCompile Include="chunk.c" />
     <ClCompile Include="chunkmesh.c" />
     <ClCompile Include="color.c" />
@@ -43,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\Blocks\stone.png" />
+    <Image Include="Textures\Blocks\TextureAtlas.png" />
     <Image Include="Textures\container.jpg" />
     <Image Include="Textures\heav.png" />
     <Image Include="Textures\painedsuffering.jpg" />
@@ -51,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="block.h" />
+    <ClInclude Include="blockface.h" />
     <ClInclude Include="chunk.h" />
     <ClInclude Include="chunkmesh.h" />
     <ClInclude Include="color.h" />

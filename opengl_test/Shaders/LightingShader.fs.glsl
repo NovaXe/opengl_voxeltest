@@ -3,7 +3,8 @@ out vec4 FragColor;
 
 in vec3 Normal;
 in vec3 FragPos;
-in vec2 TexCoord;
+in vec2 UV;
+in vec3 Color;
 
 uniform vec3 lightColor;
 uniform vec3 lightPos;
@@ -32,11 +33,8 @@ void main()
 
     vec3 specular = specularStrength * spec * lightColor;
 
-    vec3 result = (ambient + diffuse + specular) * objectColor;
+    vec3 result = (ambient + diffuse + specular) * Color;
 
-    FragColor = texture(objectTexture, TexCoord) * vec4 (result, 1.0);
-
-
-    //FragColor = vec4 (result, 1.0);
+    FragColor = texture(objectTexture, UV) * vec4 (result, 1.0);
 
 }

@@ -27,7 +27,7 @@
 
 #define GRID_SIZE 16
 
-#define WBlock BlockMutation
+#define WBlock BlockMutation_t
 
 
 int g_windowWidth = SCREEN_W;
@@ -49,7 +49,7 @@ vec3 g_cameraFront = { 0.0f, 0.0f, -1.0f };
 vec3 g_cameraUp = { 0.0f, 1.0f, 0.0f };
 vec3 g_cameraTarget;
 
-vec3 g_lightPos = { 16.0f, 16.0f, 16.0f };
+vec3 g_lightPos = { WORLD_CHUNKS_X * CHUNK_SIZE_X, WORLD_CHUNKS_Y * CHUNK_SIZE_Y, WORLD_CHUNKS_Z * CHUNK_SIZE_Z };
 
 vec3 g_selectionPos;
 
@@ -137,7 +137,7 @@ int main()
 
 	
 
-	Shader shaderProgram = shader_compileShader("Shaders\\BasicVertexShader.vs.glsl", "Shaders\\BasicFragmentShader.fs.glsl");
+	//Shader shaderProgram = shader_compileShader("Shaders\\BasicVertexShader.vs.glsl", "Shaders\\BasicFragmentShader.fs.glsl");
 
 	Shader lightingShader = shader_compileShader("Shaders\\LightingShader.vs.glsl", "Shaders\\LightingShader.fs.glsl");
 	Shader lightSourceShader = shader_compileShader("Shaders\\LightSource.vs.glsl", "Shaders\\LightSource.fs.glsl");
@@ -186,48 +186,94 @@ int main()
 	float cube_vertices[] = {
 	// vertices				// Texture Coords	// Normal Vectors
 	// Back Face
-	-0.5f, -0.5f, -0.5f,	0.0f, 0.0f,		0.0f,  0.0f, -1.0f,		// Bottom-left
-	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f,		0.0f,  0.0f, -1.0f,		// top-right
-	 0.5f, -0.5f, -0.5f,	1.0f, 0.0f,		0.0f,  0.0f, -1.0f,		// bottom-right       
-	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f,		0.0f,  0.0f, -1.0f,		// top-right
-	-0.5f, -0.5f, -0.5f,	0.0f, 0.0f,		0.0f,  0.0f, -1.0f,		// bottom-left
-	-0.5f,  0.5f, -0.5f,	0.0f, 1.0f,		0.0f,  0.0f, -1.0f,		// top-left
+	0, 0, 0,	0.0f, 0.0f,		0.0f,  0.0f, -1.0f,		// Bottom-left
+	1, 1, 0,	1.0f, 1.0f,		0.0f,  0.0f, -1.0f,		// top-right
+	1, 0, 0,	1.0f, 0.0f,		0.0f,  0.0f, -1.0f,		// bottom-right       
+	1, 1, 0,	1.0f, 1.0f,		0.0f,  0.0f, -1.0f,		// top-right
+	0, 0, 0,	0.0f, 0.0f,		0.0f,  0.0f, -1.0f,		// bottom-left
+	0, 1, 0,	0.0f, 1.0f,		0.0f,  0.0f, -1.0f,		// top-left
 	// Front face					   			  
-	-0.5f, -0.5f,  0.5f,	0.0f, 0.0f,		0.0f,  0.0f,  1.0f,		// bottom-left
-	 0.5f, -0.5f,  0.5f,	1.0f, 0.0f,		0.0f,  0.0f,  1.0f,		// bottom-right
-	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f,		0.0f,  0.0f,  1.0f,		// top-right
-	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f,		0.0f,  0.0f,  1.0f,		// top-right
-	-0.5f,  0.5f,  0.5f,	0.0f, 1.0f,		0.0f,  0.0f,  1.0f,		// top-left
-	-0.5f, -0.5f,  0.5f,	0.0f, 0.0f,		0.0f,  0.0f,  1.0f,		// bottom-left
+	0, 0, 1,	0.0f, 0.0f,		0.0f,  0.0f,  1.0f,		// bottom-left
+	1, 0, 1,	1.0f, 0.0f,		0.0f,  0.0f,  1.0f,		// bottom-right
+	1, 1, 1,	1.0f, 1.0f,		0.0f,  0.0f,  1.0f,		// top-right
+	1, 1, 1,	1.0f, 1.0f,		0.0f,  0.0f,  1.0f,		// top-right
+	0, 1, 1,	0.0f, 1.0f,		0.0f,  0.0f,  1.0f,		// top-left
+	0, 0, 1,	0.0f, 0.0f,		0.0f,  0.0f,  1.0f,		// bottom-left
 	// Left face								  
-	-0.5f,  0.5f,  0.5f,	1.0f, 0.0f,	   -1.0f,  0.0f,  0.0f,		// top-right
-	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f,	   -1.0f,  0.0f,  0.0f,		// top-left
-	-0.5f, -0.5f, -0.5f,	0.0f, 1.0f,	   -1.0f,  0.0f,  0.0f,		// bottom-left
-	-0.5f, -0.5f, -0.5f,	0.0f, 1.0f,	   -1.0f,  0.0f,  0.0f,		// bottom-left
-	-0.5f, -0.5f,  0.5f,	0.0f, 0.0f,	   -1.0f,  0.0f,  0.0f,		// bottom-right
-	-0.5f,  0.5f,  0.5f,	1.0f, 0.0f,	   -1.0f,  0.0f,  0.0f,		// top-right
+	0, 1, 1,	1.0f, 0.0f,	   -1.0f,  0.0f,  0.0f,		// top-right
+	0, 1, 0,	1.0f, 1.0f,	   -1.0f,  0.0f,  0.0f,		// top-left
+	0, 0, 0,	0.0f, 1.0f,	   -1.0f,  0.0f,  0.0f,		// bottom-left
+	0, 0, 0,	0.0f, 1.0f,	   -1.0f,  0.0f,  0.0f,		// bottom-left
+	0, 0, 1,	0.0f, 0.0f,	   -1.0f,  0.0f,  0.0f,		// bottom-right
+	0, 1, 1,	1.0f, 0.0f,	   -1.0f,  0.0f,  0.0f,		// top-right
 	// Right face	  		 	   			   	  
-	 0.5f,  0.5f,  0.5f,	1.0f, 0.0f,		1.0f,  0.0f,  0.0f,		// top-left
-	 0.5f, -0.5f, -0.5f,	0.0f, 1.0f,		1.0f,  0.0f,  0.0f,		// bottom-right
-	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f,		1.0f,  0.0f,  0.0f,		// top-right         
-	 0.5f, -0.5f, -0.5f,	0.0f, 1.0f,		1.0f,  0.0f,  0.0f,		// bottom-right
-	 0.5f,  0.5f,  0.5f,	1.0f, 0.0f,		1.0f,  0.0f,  0.0f,		// top-left
-	 0.5f, -0.5f,  0.5f,	0.0f, 0.0f,		1.0f,  0.0f,  0.0f,		// bottom-left     
+	1, 1, 1,	1.0f, 0.0f,		1.0f,  0.0f,  0.0f,		// top-left
+	1, 0, 0,	0.0f, 1.0f,		1.0f,  0.0f,  0.0f,		// bottom-right
+	1, 1, 0,	1.0f, 1.0f,		1.0f,  0.0f,  0.0f,		// top-right         
+	1, 0, 0,	0.0f, 1.0f,		1.0f,  0.0f,  0.0f,		// bottom-right
+	1, 1, 1,	1.0f, 0.0f,		1.0f,  0.0f,  0.0f,		// top-left
+	1, 0, 1,	0.0f, 0.0f,		1.0f,  0.0f,  0.0f,		// bottom-left     
 	// Bottom face	  		 	   			   	  
-	-0.5f, -0.5f, -0.5f,	0.0f, 1.0f,		0.0f, -1.0f,  0.0f,		// top-right
-	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f,		0.0f, -1.0f,  0.0f,		// top-left
-	 0.5f, -0.5f,  0.5f,	1.0f, 0.0f,		0.0f, -1.0f,  0.0f,		// bottom-left
-	 0.5f, -0.5f,  0.5f,	1.0f, 0.0f,		0.0f, -1.0f,  0.0f,		// bottom-left
-	-0.5f, -0.5f,  0.5f,	0.0f, 0.0f,		0.0f, -1.0f,  0.0f,		// bottom-right
-	-0.5f, -0.5f, -0.5f,	0.0f, 1.0f,		0.0f, -1.0f,  0.0f,		// top-right
+	0, 0, 0,	0.0f, 1.0f,		0.0f, -1.0f,  0.0f,		// top-right
+	1, 0, 0,	1.0f, 1.0f,		0.0f, -1.0f,  0.0f,		// top-left
+	1, 0, 1,	1.0f, 0.0f,		0.0f, -1.0f,  0.0f,		// bottom-left
+	1, 0, 1,	1.0f, 0.0f,		0.0f, -1.0f,  0.0f,		// bottom-left
+	0, 0, 1,	0.0f, 0.0f,		0.0f, -1.0f,  0.0f,		// bottom-right
+	0, 0, 0,	0.0f, 1.0f,		0.0f, -1.0f,  0.0f,		// top-right
 	// Top face				  		   		  
-	-0.5f,  0.5f, -0.5f,	0.0f, 1.0f,		0.0f,  1.0f,  0.0f,		// top-left
-	 0.5f,  0.5f,  0.5f,	1.0f, 0.0f,		0.0f,  1.0f,  0.0f,		// bottom-right
-	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f,		0.0f,  1.0f,  0.0f,		// top-right     
-	 0.5f,  0.5f,  0.5f,	1.0f, 0.0f,		0.0f,  1.0f,  0.0f,		// bottom-right
-	-0.5f,  0.5f, -0.5f,	0.0f, 1.0f,		0.0f,  1.0f,  0.0f,		// top-left
-	-0.5f,  0.5f,  0.5f,	0.0f, 0.0f,		0.0f,  1.0f,  0.0f 		// bottom-left        
+	0, 1, 0,	0.0f, 1.0f,		0.0f,  1.0f,  0.0f,		// top-left
+	1, 1, 1,	1.0f, 0.0f,		0.0f,  1.0f,  0.0f,		// bottom-right
+	1, 1, 0,	1.0f, 1.0f,		0.0f,  1.0f,  0.0f,		// top-right     
+	1, 1, 1,	1.0f, 0.0f,		0.0f,  1.0f,  0.0f,		// bottom-right
+	0, 1, 0,	0.0f, 1.0f,		0.0f,  1.0f,  0.0f,		// top-left
+	0, 1, 1,	0.0f, 0.0f,		0.0f,  1.0f,  0.0f 		// bottom-left        
 	};
+
+	//float cube_vertices[] = {
+	//	// vertices				// Texture Coords	// Normal Vectors
+	//	// Back Face
+	//	-0.5f, -0.5f, -0.5f,	0.0f, 0.0f,		0.0f,  0.0f, -1.0f,		// Bottom-left
+	//	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f,		0.0f,  0.0f, -1.0f,		// top-right
+	//	 0.5f, -0.5f, -0.5f,	1.0f, 0.0f,		0.0f,  0.0f, -1.0f,		// bottom-right       
+	//	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f,		0.0f,  0.0f, -1.0f,		// top-right
+	//	-0.5f, -0.5f, -0.5f,	0.0f, 0.0f,		0.0f,  0.0f, -1.0f,		// bottom-left
+	//	-0.5f,  0.5f, -0.5f,	0.0f, 1.0f,		0.0f,  0.0f, -1.0f,		// top-left
+	//	// Front face					   			  
+	//	-0.5f, -0.5f,  0.5f,	0.0f, 0.0f,		0.0f,  0.0f,  1.0f,		// bottom-left
+	//	 0.5f, -0.5f,  0.5f,	1.0f, 0.0f,		0.0f,  0.0f,  1.0f,		// bottom-right
+	//	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f,		0.0f,  0.0f,  1.0f,		// top-right
+	//	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f,		0.0f,  0.0f,  1.0f,		// top-right
+	//	-0.5f,  0.5f,  0.5f,	0.0f, 1.0f,		0.0f,  0.0f,  1.0f,		// top-left
+	//	-0.5f, -0.5f,  0.5f,	0.0f, 0.0f,		0.0f,  0.0f,  1.0f,		// bottom-left
+	//	// Left face								  
+	//	-0.5f,  0.5f,  0.5f,	1.0f, 0.0f,	   -1.0f,  0.0f,  0.0f,		// top-right
+	//	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f,	   -1.0f,  0.0f,  0.0f,		// top-left
+	//	-0.5f, -0.5f, -0.5f,	0.0f, 1.0f,	   -1.0f,  0.0f,  0.0f,		// bottom-left
+	//	-0.5f, -0.5f, -0.5f,	0.0f, 1.0f,	   -1.0f,  0.0f,  0.0f,		// bottom-left
+	//	-0.5f, -0.5f,  0.5f,	0.0f, 0.0f,	   -1.0f,  0.0f,  0.0f,		// bottom-right
+	//	-0.5f,  0.5f,  0.5f,	1.0f, 0.0f,	   -1.0f,  0.0f,  0.0f,		// top-right
+	//	// Right face	  		 	   			   	  
+	//	 0.5f,  0.5f,  0.5f,	1.0f, 0.0f,		1.0f,  0.0f,  0.0f,		// top-left
+	//	 0.5f, -0.5f, -0.5f,	0.0f, 1.0f,		1.0f,  0.0f,  0.0f,		// bottom-right
+	//	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f,		1.0f,  0.0f,  0.0f,		// top-right         
+	//	 0.5f, -0.5f, -0.5f,	0.0f, 1.0f,		1.0f,  0.0f,  0.0f,		// bottom-right
+	//	 0.5f,  0.5f,  0.5f,	1.0f, 0.0f,		1.0f,  0.0f,  0.0f,		// top-left
+	//	 0.5f, -0.5f,  0.5f,	0.0f, 0.0f,		1.0f,  0.0f,  0.0f,		// bottom-left     
+	//	// Bottom face	  		 	   			   	  
+	//	-0.5f, -0.5f, -0.5f,	0.0f, 1.0f,		0.0f, -1.0f,  0.0f,		// top-right
+	//	 0.5f, -0.5f, -0.5f,	1.0f, 1.0f,		0.0f, -1.0f,  0.0f,		// top-left
+	//	 0.5f, -0.5f,  0.5f,	1.0f, 0.0f,		0.0f, -1.0f,  0.0f,		// bottom-left
+	//	 0.5f, -0.5f,  0.5f,	1.0f, 0.0f,		0.0f, -1.0f,  0.0f,		// bottom-left
+	//	-0.5f, -0.5f,  0.5f,	0.0f, 0.0f,		0.0f, -1.0f,  0.0f,		// bottom-right
+	//	-0.5f, -0.5f, -0.5f,	0.0f, 1.0f,		0.0f, -1.0f,  0.0f,		// top-right
+	//	// Top face				  		   		  
+	//	-0.5f,  0.5f, -0.5f,	0.0f, 1.0f,		0.0f,  1.0f,  0.0f,		// top-left
+	//	 0.5f,  0.5f,  0.5f,	1.0f, 0.0f,		0.0f,  1.0f,  0.0f,		// bottom-right
+	//	 0.5f,  0.5f, -0.5f,	1.0f, 1.0f,		0.0f,  1.0f,  0.0f,		// top-right     
+	//	 0.5f,  0.5f,  0.5f,	1.0f, 0.0f,		0.0f,  1.0f,  0.0f,		// bottom-right
+	//	-0.5f,  0.5f, -0.5f,	0.0f, 1.0f,		0.0f,  1.0f,  0.0f,		// top-left
+	//	-0.5f,  0.5f,  0.5f,	0.0f, 0.0f,		0.0f,  1.0f,  0.0f 		// bottom-left        
+	//};
 
 
 
@@ -287,37 +333,37 @@ int main()
 	float selectionVertices[] =
 	{
 		//back
-		-0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
-		-0.5f,	0.5f, -0.5f,
-		 0.5f,	0.5f, -0.5f,
+		0, 0, 0,
+		1, 0, 0,
+		0, 1, 0,
+		1, 1, 0,
 		//front
-		-0.5f, -0.5f,  0.5f,
-		 0.5f, -0.5f,  0.5f,
-		-0.5f,	0.5f,  0.5f,
-		 0.5f,	0.5f,  0.5f,
+		0, 0, 1,
+		1, 0, 1,
+		0, 1, 1,
+		1, 1, 1,
 
 		 //left
-		-0.5f, -0.5f, -0.5f, 
-		-0.5f,  0.5f, -0.5f, 
-		-0.5f, -0.5f,  0.5f, 
-		-0.5f,  0.5f,  0.5f, 
+		0, 0, 0, 
+		0, 1, 0, 
+		0, 0, 1, 
+		0, 1, 1, 
 		 //right
-		 0.5f, -0.5f, -0.5f,  
-		 0.5f,  0.5f, -0.5f,  
-		 0.5f, -0.5f,  0.5f,  
-		 0.5f,  0.5f,  0.5f,  
+		1, 0, 0,  
+		1, 1, 0,  
+		1, 0, 1,  
+		1, 1, 1,  
 
 		 //bottom
-		-0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f,  0.5f,
-		 0.5f, -0.5f,  0.5f,
+		0, 0, 0,
+		1, 0, 0,
+		0, 0, 1,
+		1, 0, 1,
 		 //top
-		-0.5f,  0.5f, -0.5f,
-		 0.5f,  0.5f, -0.5f,
-		-0.5f,  0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
+		0, 1, 0,
+		1, 1, 0,
+		0, 1, 1,
+		1, 1, 1,
 
 
 
@@ -371,10 +417,10 @@ int main()
 	glEnableVertexAttribArray(0);
 
 	//vertex texture coordinates
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
 	//safe to unbind
@@ -469,7 +515,8 @@ int main()
 
 	
 
-	texture_genTextures();
+	//texture_genTextures();
+	texture_genAtlas();
 
 	block_defineBlocks();
 
@@ -540,9 +587,12 @@ int main()
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture_list[1]);*/
 
-		glUseProgram(lightingShader);
+		shader_lightingShader;
+		currentShader = shader_lightingShader;
+
+		glUseProgram(shader_lightingShader);
 		
-		currentShader = lightingShader;
+		//currentShader = lightingShader;
 
 		transformLoc = glGetUniformLocation(currentShader, "transform");
 		modelLoc = glGetUniformLocation(currentShader, "model");
@@ -565,17 +615,23 @@ int main()
 		glm_lookat(g_cameraPos, g_cameraTarget, g_cameraUp, view);
 
 		mat4 projection;
-		glm_perspective(glm_rad(90.0f), ((float)g_windowWidth / (float)g_windowHeight), 0.1f, 100.0f, projection);
+		glm_perspective(glm_rad(90.0f), ((float)g_windowWidth / (float)g_windowHeight), 0.1f, 1000.0f, projection);
 
 		//glm_vec3_copy((vec3) { 1.0 + sin(timeValue) * 2.0, 2.0f, 2.0f }, g_lightPos);
 
-		mat4_setUniform(currentShader, "view", view);
-		mat4_setUniform(currentShader, "projection", projection);
+		shader_setUniformMat4(currentShader, "view", view);
+		shader_setUniformMat4(currentShader, "projection", projection);
 
+		shader_setUniformVec3(shader_lightingShader, "lightColor", g_lighting_color);
+		shader_setUniformVec3(shader_lightingShader, "lightPos", g_lightPos);
+		shader_setUniformVec3(shader_lightingShader, "viewPos", g_cameraPos);
 
+		// shader_setUniformVec3(shader_lightingShader, "objectColor", color_white);
 
 		//draws the voxel grid
-		drawVoxels(currentShader, VAO);
+		//drawVoxels(currentShader, VAO);
+		world_draw();
+
 
 		vec3 blockSel;
 		vec3 dir;
@@ -589,19 +645,30 @@ int main()
 
 
 		mat4 model = GLM_MAT4_IDENTITY_INIT;
-		glm_translate(model, (vec3) { floor(g_selectionPos[0] + 0.5), floor(g_selectionPos[1] + 0.5), floor(g_selectionPos[2] + 0.5) });
+		//glm_translate(model, (vec3) { floor(g_selectionPos[0] + 0.5), floor(g_selectionPos[1] + 0.5), floor(g_selectionPos[2] + 0.5) });
 
-		mat4_setUniform(currentShader, "model", model);
-		vec3_setUniform(currentShader, "objectColor", GLM_VEC3_ZERO);
+		glm_translate(model, (vec3) { floor(g_selectionPos[0]), floor(g_selectionPos[1]), floor(g_selectionPos[2]) });
+		//glm_translate(model, (vec3) { 0.5, 0.5, 0.5 });
+		//glm_translate(model, (vec3) { floor(g_selectionPos[0]), floor(g_selectionPos[1]), floor(g_selectionPos[2]) });
+
+
+		glUseProgram(currentShader);
+
+		shader_setUniformMat4(currentShader, "model", model);
+		shader_setUniformVec3(currentShader, "objectColor", GLM_VEC3_ZERO);
 
 		//glDisable(GL_CULL_FACE);
 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glLineWidth(4);
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		glLineWidth(1);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		if (1) {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glLineWidth(4);
+			glBindVertexArray(VAO);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			glLineWidth(1);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+
+		
 
 		//glEnable(GL_CULL_FACE);
 
@@ -664,11 +731,11 @@ int main()
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, view);
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, projection);*/
 
-		mat4_setUniform(currentShader, "model", model);
-		mat4_setUniform(currentShader, "view", view);
-		mat4_setUniform(currentShader, "projection", projection);
+		shader_setUniformMat4(currentShader, "model", model);
+		shader_setUniformMat4(currentShader, "view", view);
+		shader_setUniformMat4(currentShader, "projection", projection);
 
-		vec3_setUniform(currentShader, "lightColor", g_lighting_color);
+		shader_setUniformVec3(currentShader, "lightColor", g_lighting_color);
 
 		//glUniform3fv(lightColorLoc, 1, lighting_color);
 		
@@ -740,9 +807,9 @@ void drawVoxels(unsigned int shader, unsigned int VAO)
 	mat4 model;
 
 	//vec3_setUniform(shader, "objectColor", color_grey);
-	vec3_setUniform(shader, "lightColor", g_lighting_color);
-	vec3_setUniform(shader, "lightPos", g_lightPos);
-	vec3_setUniform(shader, "viewPos", g_cameraPos);
+	shader_setUniformVec3(shader, "lightColor", g_lighting_color);
+	shader_setUniformVec3(shader, "lightPos", g_lightPos);
+	shader_setUniformVec3(shader, "viewPos", g_cameraPos);
 
 
 	//vec3_setUniform(shader, "objectColor", color_grey);
@@ -763,22 +830,22 @@ void drawVoxels(unsigned int shader, unsigned int VAO)
 			for (int k = 0; k < GRID_SIZE; k++) {
 				glm_mat4_copy(GLM_MAT4_IDENTITY, model);
 				glm_translate(model, (vec3) { (float) chunkX * CHUNK_SIZE_X, (float)0, (float)0 });
-				glm_translate(model, (vec3) { (float) i, (float) j, (float) k });
+				glm_translate(model, (vec3) { (float) j, (float) i, (float) k });
 				glm_scale(model, (vec3) { 1.00, 1.00, 1.00 });
 
 				//(vec3) {0.25, 0.25, 0.25}
 				//{1.00, 1.00, 1.00}
-				mat4_setUniform(shader, "model", model);
+				shader_setUniformMat4(shader, "model", model);
 
-				Chunk* currentChunk = &world_chunks[0][chunkX][0];
+				Chunk* currentChunk = &world_chunks[chunkX][0][0];
 
 				WBlock* current = currentChunk->grid[j][i][k];
 
-				Block* currentBlock = block_get(current->blockID);
+				Block_t* currentBlock = block_get(current->blockID);
 				unsigned int currentTexture = block_get(current->blockID)->textureID;
 
-				vec3_setUniform(shader, "objectColor", *(current->color));
-				texture_setUniform(shader, "objectTexture", current->blockID);
+				shader_setUniformVec3(shader, "objectColor", *(current->color));
+				shader_setUniformTexture(shader, "objectTexture", current->blockID);
 
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, currentTexture);
@@ -812,8 +879,8 @@ void drawVoxels(unsigned int shader, unsigned int VAO)
 
 
 				//checks -x and +x faces
-				if (i - 1 >= 0) {
-					ID = currentChunk->grid[j][i - 1][k]->blockID;
+				if (j - 1 >= 0) {
+					ID = currentChunk->grid[j - 1][i][k]->blockID;
 					if (ID == 0) {
 						glDrawArrays(GL_TRIANGLES, 12, 6);
 					}
@@ -822,8 +889,8 @@ void drawVoxels(unsigned int shader, unsigned int VAO)
 					glDrawArrays(GL_TRIANGLES, 12, 6);
 				}
 
-				if (i + 1 < GRID_SIZE) {
-					ID = currentChunk->grid[j][i + 1][k]->blockID;
+				if (j + 1 < GRID_SIZE) {
+					ID = currentChunk->grid[j + 1][i][k]->blockID;
 					if (ID == 0) {
 						glDrawArrays(GL_TRIANGLES, 18, 6);
 					}
@@ -834,8 +901,8 @@ void drawVoxels(unsigned int shader, unsigned int VAO)
 
 				//checks -y and +y faces
 
-				if (j - 1 >= 0){
-					ID = currentChunk->grid[j - 1][i][k]->blockID;
+				if (i - 1 >= 0){
+					ID = currentChunk->grid[j][i-1][k]->blockID;
 					if (ID == 0) {
 						glDrawArrays(GL_TRIANGLES, 24, 6);
 					}
@@ -844,8 +911,8 @@ void drawVoxels(unsigned int shader, unsigned int VAO)
 					glDrawArrays(GL_TRIANGLES, 24, 6);
 				}
 
-				if (j + 1 < GRID_SIZE) {
-					ID = currentChunk->grid[j + 1][i][k]->blockID;
+				if (i + 1 < GRID_SIZE) {
+					ID = currentChunk->grid[j][i+1][k]->blockID;
 					if (ID == 0) {
 						glDrawArrays(GL_TRIANGLES, 30, 6);
 					}
@@ -868,7 +935,7 @@ void drawVoxels(unsigned int shader, unsigned int VAO)
 
 	glBindVertexArray(0);
 }
-
+// NOT USED ^^^^^^^^^^^^^^^^
 
 ////---------------------------------------------------------------------------------
 ////	wrap into into something like world.c and consolidate to one setting function
@@ -895,12 +962,9 @@ void placeBlock(vec3 blockCoord)
 	int z = blockCoord[2];
 
 	WBlock* block = g_currentBlock;
-	
-	world_setBlock(blockCoord, block);
-
-	/*if ((x >= 0 && x < GRID_SIZE) && (y >= 0 && y < GRID_SIZE) && (z >= 0 && z < GRID_SIZE)) {
-		g_blockGrid[y][x][z] = block;
-	}*/
+	if (world_checkBounds(blockCoord)) {
+		world_setBlock(blockCoord, block);
+	}
 }
 
 //void fillGrid() 
@@ -992,11 +1056,11 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) 
 {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		breakBlock((vec3) { floor(g_selectionPos[0] + 0.5), floor(g_selectionPos[1] + 0.5), floor(g_selectionPos[2] + 0.5)});
+		breakBlock((vec3) { floor(g_selectionPos[0]), floor(g_selectionPos[1]), floor(g_selectionPos[2]) });
 	}
 
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-		placeBlock((vec3) { floor(g_selectionPos[0] + 0.5), floor(g_selectionPos[1] + 0.5), floor(g_selectionPos[2] + 0.5) });
+		placeBlock((vec3) { floor(g_selectionPos[0]), floor(g_selectionPos[1]), floor(g_selectionPos[2]) });
 	}
 
 	
@@ -1097,7 +1161,7 @@ void processInput(GLFWwindow* window)
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) 
 {
 	static bool H_state = false;
-	printf("KEYPRESS EVENT\nKey: %c || Action: %d\n--------------------\n", (char)key, action);
+	//printf("KEYPRESS EVENT\nKey: %c || Action: %d\n--------------------\n", (char)key, action);
 	if (key == GLFW_KEY_F && action == GLFW_PRESS) {
 		render_wireframe = !render_wireframe;
 	}
@@ -1112,6 +1176,22 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			g_scrollMode = Mode_lightBrightness;
 		else
 			g_scrollMode = Mode_cameraSpeed;
+	}
+
+	if (key == GLFW_KEY_B && action == GLFW_PRESS) {
+		if (world_checkBounds(g_selectionPos)) {
+			BlockMutation_t* block = world_getBlock(g_selectionPos);
+			char* name = block_definitions[block->blockID].name;
+			
+			printf("Block: %s at position: %d, %d, %d\n", name, (int) floor(g_selectionPos[0]), (int) floor(g_selectionPos[1]), (int) floor(g_selectionPos[2]));
+		}
+		else {
+			printf("Selection out of bounds\n");
+		}
+		
+		
+		
+
 	}
 
 
@@ -1131,6 +1211,18 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				break;
 			case GLFW_KEY_5:
 				g_currentBlock = block_getMutation(block_stone, 4);
+				break;
+			case GLFW_KEY_6:
+				g_currentBlock = block_getMutation(block_dirt, 0);
+				break;
+			case GLFW_KEY_7:
+				g_currentBlock = block_getMutation(block_dirt, 1);
+				break;
+			case GLFW_KEY_8:
+				g_currentBlock = block_getMutation(block_dirt, 2);
+				break;
+			case GLFW_KEY_9:
+				g_currentBlock = block_getMutation(block_dirt, 3);
 				break;
 
 
